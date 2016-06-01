@@ -14,7 +14,11 @@ namespace search {
     
     constexpr static int BESIDE_PAIR_WEIGHT = 8;
     constexpr static int BESIDE_NEXT_WEIGHT = 4;
-    constexpr static double TYPO_LIMIT = 4;
+    constexpr static double TYPO_LIMIT = 0.75;
+
+    constexpr static double P_DIST_WEIGHT = 1;
+    constexpr static double P_FREQ_WEIGHT = 3;
+    constexpr static double P_FREQ_D_WEIGHT = 2;
 
     extern bool is_debug;
 }

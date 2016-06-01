@@ -44,7 +44,7 @@ outputHelp()
        "\n"
        "Note:\n"
        "  default index directory is under ~/.search, change it by setting environment\n"
-       "  varible " ENV_VAR_NAME "\n"
+       "  variable " ENV_VAR_NAME "\n"
        "\n"
     ;
 

@@ -159,6 +159,8 @@ SearchDriver::queryIndex(WordList *list, DocVector &result, int result_index)
     return result;
 }
 
+constexpr double PI = 3.141592653;
+
 Utils::TokenList
 SearchDriver::queryTokenList(std::string query)
 {
@@ -191,8 +193,9 @@ SearchDriver::queryTokenList(std::string query)
             it->Next();
             continue;
         }
-        double score = std::log(1 + *reinterpret_cast<const count_t*>(it->value().data()) / freq_o) *
-                       (1.0 / (Utils::editDistence(token_list[0], replace)));
+        double p_freq = std::atan(*reinterpret_cast<const count_t*>(it->value().data()) / freq_o) * 2 / PI;
+        double p_dist = 1.0 / ((Utils::editDistence(token_list[0], replace)) + 1);
+        double score = (P_DIST_WEIGHT + P_FREQ_WEIGHT) / (P_FREQ_WEIGHT / p_freq + P_DIST_WEIGHT / p_dist);
 
         if (score > max_score) {
             replacement = replace;
@@ -237,17 +240,15 @@ SearchDriver::queryTokenList(std::string query)
                 it->Next();
                 continue;
             }
-            double score = 
-                std::log(1 +
-                        1.0 * (index->getIndexWordCount(
-                                WordListWrapper(std::vector<std::string>{replace}))) /
-                        freq_o
-                    ) *
-                std::log(1 +
-                        1.0 * (*reinterpret_cast<const count_t *>(it->value().data())) /
-                        freq_d_o
-                    ) *
-                (1.0 / Utils::editDistence(original, replace));
+
+            double p_freq = std::atan(
+                    (index->getIndexWordCount(WordListWrapper(std::vector<std::string>{prev, replace}))) / freq_o) 
+                    * 2 / PI;
+            double p_freq_d = std::atan((*reinterpret_cast<const count_t *>(it->value().data())) / freq_d_o) * 2 / PI;
+            double p_dist = 1.0 / (Utils::editDistence(original, replace) + 1);
+            double score = (P_DIST_WEIGHT + P_FREQ_WEIGHT + P_FREQ_D_WEIGHT) /
+                            (P_FREQ_WEIGHT / p_freq + P_FREQ_D_WEIGHT / p_freq_d + P_DIST_WEIGHT / p_dist);
+
             if (score > max_score) {
                 replacement = replace;
                 max_score = score;
